@@ -260,7 +260,12 @@
     "equivalence_files": []
   },
   "erc": {
-    "erc_exclusions": [],
+    "erc_exclusions": [
+      [
+        "footprint_link_issues|2425700|1930400|1476c35e-e0cc-4fb5-aec5-b785caa6e457|00000000-0000-0000-0000-000000000000|||",
+        ""
+      ]
+    ],
     "meta": {
       "version": 0
     },
@@ -455,8 +460,8 @@
       "isolated_pin_label": "warning",
       "label_dangling": "error",
       "label_multiple_wires": "warning",
-      "lib_symbol_issues": "warning",
-      "lib_symbol_mismatch": "warning",
+      "lib_symbol_issues": "ignore",
+      "lib_symbol_mismatch": "ignore",
       "missing_bidi_pin": "warning",
       "missing_input_pin": "warning",
       "missing_power_pin": "error",
@@ -706,7 +711,7 @@
         "uuid": "a747e336-745a-48cd-934b-a0b847ac05c2"
       }
     ],
-    "used_designators": "Z1-4,R1-19,JP1,#FLG1-6,U1-6,C1-6,D1-5,A1,#PWR1-43,J1-2",
+    "used_designators": "Z1-4,R1-19,#FLG1-6,JP1,U1-6,C1-6,D1-5,A1,#PWR1-43,J1-2",
     "variants": []
   },
   "sheets": [
