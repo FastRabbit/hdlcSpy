@@ -661,6 +661,16 @@
         "RX",
         "TX",
         "Col"
+      ],
+      "SD": [
+        "DAT0",
+        "DAT1",
+        "DAT2",
+        "DAT3/CD",
+        "CMD",
+        "SWA",
+        "SWB",
+        "CLK"
       ]
     },
     "connection_grid_size": 50.0,
@@ -711,7 +721,7 @@
         "uuid": "a747e336-745a-48cd-934b-a0b847ac05c2"
       }
     ],
-    "used_designators": "Z1-4,R1-19,#FLG1-6,JP1,U1-6,C1-6,D1-5,A1,#PWR1-43,J1-2",
+    "used_designators": "Z1-4,R1-19,#FLG1-6,JP1,U1-6,C1-7,D1-5,A1,#PWR1-48,J1-3",
     "variants": []
   },
   "sheets": [
