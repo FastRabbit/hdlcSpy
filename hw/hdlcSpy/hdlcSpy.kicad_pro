@@ -69,8 +69,23 @@
           "thermal_relief_spoke_width": 0.5
         }
       },
-      "diff_pair_dimensions": [],
-      "drc_exclusions": [],
+      "diff_pair_dimensions": [
+        {
+          "gap": 0.0,
+          "via_gap": 0.0,
+          "width": 0.0
+        }
+      ],
+      "drc_exclusions": [
+        [
+          "lib_footprint_mismatch|76732500|83310000|b224300b-1595-4743-baf7-8f9e8ced118b|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "nonmirrored_text_on_back_layer|112705000|127500000|2a960ba8-d2a8-420e-9959-00179189c91b|00000000-0000-0000-0000-000000000000",
+          ""
+        ]
+      ],
       "meta": {
         "version": 2
       },
@@ -203,7 +218,9 @@
           "td_width_to_size_filter_ratio": 0.9
         }
       ],
-      "track_widths": [],
+      "track_widths": [
+        0.0
+      ],
       "tuning_pattern_settings": {
         "diff_pair_defaults": {
           "corner_radius_percentage": 80,
@@ -230,7 +247,12 @@
           "spacing": 0.6
         }
       },
-      "via_dimensions": [],
+      "via_dimensions": [
+        {
+          "diameter": 0.0,
+          "drill": 0.0
+        }
+      ],
       "zones_allow_external_fillets": false
     },
     "ipc2581": {
@@ -240,7 +262,7 @@
       "internal_id": "",
       "mfg": "",
       "mpn": "",
-      "sch_revision": "A"
+      "sch_revision": "${SCH-Rev}"
     },
     "layer_pairs": [],
     "layer_presets": [],
@@ -263,6 +285,10 @@
     "erc_exclusions": [
       [
         "footprint_link_issues|2425700|1930400|1476c35e-e0cc-4fb5-aec5-b785caa6e457|00000000-0000-0000-0000-000000000000|||",
+        ""
+      ],
+      [
+        "pin_to_pin|698500|1574800|d0f21b20-d223-4d64-a71d-30a3f02562d8|77fc051f-2b7c-4ea9-93a1-5549709ecee7|/a747e336-745a-48cd-934b-a0b847ac05c2|/a747e336-745a-48cd-934b-a0b847ac05c2|/a747e336-745a-48cd-934b-a0b847ac05c2",
         ""
       ]
     ],
@@ -512,10 +538,10 @@
         "pcb_color": "rgba(0, 0, 0, 0.000)",
         "priority": 2147483647,
         "schematic_color": "rgba(0, 0, 0, 0.000)",
-        "track_width": 0.2,
+        "track_width": 0.6,
         "tuning_profile": "",
-        "via_diameter": 0.6,
-        "via_drill": 0.3,
+        "via_diameter": 0.9,
+        "via_drill": 0.4,
         "wire_width": 6
       }
     ],
@@ -721,7 +747,7 @@
         "uuid": "a747e336-745a-48cd-934b-a0b847ac05c2"
       }
     ],
-    "used_designators": "Z1-4,R1-19,#FLG1-6,JP1,U1-6,C1-7,D1-5,A1,#PWR1-48,J1-3",
+    "used_designators": "T1-8,Z1-4,#FLG1-6,JP1,R1-19,U1-6,C1-7,D1-5,A1,#PWR1-48,J1-3",
     "variants": []
   },
   "sheets": [
@@ -730,7 +756,10 @@
       "hdlcSpy"
     ]
   ],
-  "text_variables": {},
+  "text_variables": {
+    "PCB-Rev": "A",
+    "SCH-Rev": "A"
+  },
   "tuning_profiles": {
     "meta": {
       "version": 0
