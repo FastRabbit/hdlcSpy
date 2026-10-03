@@ -171,7 +171,7 @@
         "min_track_width": 0.2,
         "min_via_annular_width": 0.1,
         "min_via_diameter": 0.5,
-        "solder_mask_to_copper_clearance": 0.0,
+        "solder_mask_to_copper_clearance": 0.005,
         "use_height_for_length_calcs": true
       },
       "teardrop_options": [
@@ -557,7 +557,7 @@
       "gencad": "",
       "idf": "",
       "netlist": "",
-      "plot": "",
+      "plot": "PCB-${PROJECTNAME}-${PCB-Rev}.pdf",
       "pos_files": "",
       "specctra_dsn": "",
       "step": "",
@@ -747,7 +747,7 @@
         "uuid": "a747e336-745a-48cd-934b-a0b847ac05c2"
       }
     ],
-    "used_designators": "T1-8,Z1-4,#FLG1-6,JP1,R1-19,U1-6,C1-7,D1-5,A1,#PWR1-48,J1-3",
+    "used_designators": "J1-3,#PWR1-48,A1,D1-5,C1-7,U1-6,R1-19,JP1,#FLG1-6,Z1-4,T1-8",
     "variants": []
   },
   "sheets": [

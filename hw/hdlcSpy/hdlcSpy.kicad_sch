@@ -7605,7 +7605,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "SN65HVD1782"
+		(property "Value" "ST4E1240DT"
 			(at 281.686 81.788 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12154,7 +12154,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "Conn_01x09"
+		(property "Value" "Connector_PinHeader_2.54mm:PinHeader_1x09_P2.54mm_Vertical"
 			(at 173.99 136.398 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -14930,7 +14930,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "SN65HVD1782"
+		(property "Value" "ST4E1240DT"
 			(at 273.304 45.72 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -15052,7 +15052,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "MODULBUS"
+		(property "Value" "PIN HEADER 2.0MM PITCH STR SMT,2"
 			(at 362.712 83.82 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -15063,7 +15063,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "Connector_PinHeader_2.00mm:PinHeader_2x12_P2.00mm_Vertical_SMD"
+		(property "Footprint" "G825M24401YEU"
 			(at 360.68 81.28 0)
 			(hide yes)
 			(show_name no)
@@ -15096,7 +15096,7 @@
 				)
 			)
 		)
-		(property "DigiKey" ""
+		(property "DigiKey" "664-G825M24401YEUTR-ND"
 			(at 360.68 81.28 0)
 			(hide yes)
 			(show_name no)
