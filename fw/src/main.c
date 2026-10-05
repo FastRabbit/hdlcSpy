@@ -59,17 +59,41 @@ static void print_banner(void) {
 /* Console                                                              */
 /* ------------------------------------------------------------------ */
 
+/**
+ * @brief Top-level command registry.
+ *
+ * clipilot requires cli_config_t::commands to point at one contiguous
+ * cli_cmd_t array, so every module's singleton `xxx_cli_command` object is
+ * copied into app_commands[] here. To add a module, give it its own
+ * `extern const cli_cmd_t xxx_cli_command;` (see led.c/led.h) and add one
+ * line below -- no other file needs to change.
+ */
+static const cli_cmd_t *const app_command_sources[] = {
+    &led_cli_command,
+};
+#define APP_COMMAND_COUNT (sizeof(app_command_sources) / sizeof(app_command_sources[0]))
+
+static cli_cmd_t app_commands[APP_COMMAND_COUNT];
+
+static void app_commands_init(void) {
+    size_t i;
+
+    for (i = 0u; i < APP_COMMAND_COUNT; i++) {
+        app_commands[i] = *app_command_sources[i];
+    }
+}
+
 static cli_t cli;
 
 /**
  * @brief Sets up the CLI instance with the built-in commands (help, history)
- * plus the `led` command for LED control.
+ * plus the application commands assembled into app_commands[].
  */
 static void console_init(void) {
     cli_config_t cfg = cli_config_default();
 
-    cfg.commands = &led_cli_command;
-    cfg.command_count = 1u;
+    cfg.commands = app_commands;
+    cfg.command_count = APP_COMMAND_COUNT;
     cfg.getc_fn = cdc_getc;
     cfg.putc_fn = cdc_putc;
     cfg.prompt = "hdlcspy> ";
@@ -84,6 +108,7 @@ int main(void) {
 
     stdio_init_all();
     led_driver_init();
+    app_commands_init();
 
     /*
      * Anything written before the host opens the CDC port is discarded, so
