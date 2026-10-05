@@ -25,6 +25,19 @@ Three LEDs are driven by the firmware's LED subsystem
 See [`firmware.md`](firmware.md) for the console `led` command that
 controls them.
 
+## TX clock
+
+The firmware's TX clock subsystem (`fw/src/tx_clock.c`/`tx_clock.h`)
+drives two signals:
+
+| Signal   | Pin    | Notes                                              |
+|----------|--------|------------------------------------------------------|
+| enable   | GPIO1  | digital output, gates an external clock buffer/driver |
+| signal   | GPIO0  | PWM square wave, 1kHz..1MHz, 50% duty                 |
+
+See [`firmware.md`](firmware.md) for the console `tx-clock` command that
+controls them.
+
 ## Key components (from `hw/datasheets/`)
 
 The datasheets vendored alongside the schematic indicate the following

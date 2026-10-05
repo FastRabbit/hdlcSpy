@@ -52,6 +52,21 @@ led <on|off|blink-slow|blink-fast|traffic> [led0|led1|led2|all]
 LED patterns keep animating in the main loop even when no terminal is
 attached, so `traffic` mode is visible without a host connected.
 
+### `tx-clock` — control the TX clock enable line and signal
+
+```
+tx-clock <enable|disable|on|off|status>
+tx-clock frequency <hz>
+```
+
+- `enable` / `disable` — drive/release the enable line on GPIO1 (gates an
+  external clock buffer/driver).
+- `on` / `off` — start/stop the clock signal itself: a 50% duty PWM square
+  wave on GPIO0, independent of the enable line.
+- `frequency <hz>` — sets the clock frequency, clamped to 1kHz..1MHz;
+  applies immediately whether or not the output is currently running.
+- `status` — prints the current enable/output/frequency state.
+
 See [`architecture.md`](architecture.md) for how `led` (and future
 modules' commands) get wired into the CLI, and
 [`.github/agents/fw-cli-module.md`](../.github/agents/fw-cli-module.md)

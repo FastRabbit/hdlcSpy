@@ -34,13 +34,16 @@ The firmware is a single-threaded, non-blocking `main()` loop (see
    not a physical UART — see `fw/CMakeLists.txt`'s
    `pico_enable_stdio_usb`/`pico_enable_stdio_uart` calls).
 2. `led_driver_init()` configures the LED GPIOs and starts all LEDs off.
-3. `app_commands_init()` assembles the CLI command table (see below).
-4. The loop polls `stdio_usb_connected()`. On a fresh connection it prints a
+3. `tx_clock_driver_init()` configures the TX clock enable GPIO and the PWM
+   slice backing the clock signal, both starting disabled.
+4. `app_commands_init()` assembles the CLI command table (see below).
+5. The loop polls `stdio_usb_connected()`. On a fresh connection it prints a
    banner and (re-)initializes the `clipilot` CLI instance, since bytes
    written before a host opens the CDC port are discarded.
-5. Every iteration calls `cli_poll()` (when connected) and unconditionally
+6. Every iteration calls `cli_poll()` (when connected) and unconditionally
    calls `led_driver_tick()`, so LED patterns keep animating even with no
-   terminal attached.
+   terminal attached. The TX clock's PWM output runs in hardware and needs
+   no per-loop tick.
 
 ### CLI command registry
 

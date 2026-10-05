@@ -19,6 +19,7 @@ add_subdirectory(external/clipilot)
 add_executable(hdlcspy_fw
     src/main.c
     src/led.c
+    src/tx_clock.c
 )
 
 pico_enable_stdio_usb(hdlcspy_fw 1)
@@ -27,6 +28,8 @@ pico_enable_stdio_uart(hdlcspy_fw 0)
 target_link_libraries(hdlcspy_fw
     pico_stdlib
     pico_rand
+    hardware_pwm
+    hardware_clocks
     clipilot::clipilot
 )
 
