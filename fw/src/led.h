@@ -2,6 +2,8 @@
 
 #include <stdint.h>
 
+#include "cli.h"
+
 /** Number of LEDs the driver controls: led0 (onboard), led1, led2. */
 #define LED_COUNT 3u
 
@@ -45,3 +47,15 @@ void led_set_mode_all(led_mode_t mode);
 
 /** @brief Human readable name for a mode, e.g. for CLI output. */
 const char *led_mode_name(led_mode_t mode);
+
+/**
+ * @brief The `led` clipilot command (with its on/off/blink-slow/blink-fast/
+ * traffic subcommands already wired up).
+ *
+ * Drop this straight into an application's cli_cmd_t table, e.g.:
+ * @code
+ * static const cli_cmd_t commands[] = { led_cli_command };
+ * @endcode
+ */
+extern const cli_cmd_t led_cli_command;
+

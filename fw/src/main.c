@@ -56,67 +56,6 @@ static void print_banner(void) {
 }
 
 /* ------------------------------------------------------------------ */
-/* LED commands                                                        */
-/* ------------------------------------------------------------------ */
-
-static const cli_arg_spec_t led_which_args[] = {
-    { "which", CLI_ARG_ENUM, true, false, led_names,
-      "led0 (onboard), led1 (GPIO17), led2 (GPIO18), or all (default all)" },
-};
-
-/** Shared implementation behind every led subcommand. */
-static int led_apply_cmd(cli_t *cli, const cli_args_t *args, led_mode_t mode) {
-    int which = cli_arg_enum(args, 0u, LED_ARG_ALL);
-
-    if (which == LED_ARG_ALL) {
-        led_set_mode_all(mode);
-    } else {
-        led_set_mode((uint32_t)which, mode);
-    }
-
-    cli_printf(cli, "%s -> %s\n", led_names[which], led_mode_name(mode));
-    return 0;
-}
-
-static int cmd_led_on(cli_t *cli, const cli_args_t *args, void *user) {
-    (void)user;
-    return led_apply_cmd(cli, args, LED_MODE_ON);
-}
-
-static int cmd_led_off(cli_t *cli, const cli_args_t *args, void *user) {
-    (void)user;
-    return led_apply_cmd(cli, args, LED_MODE_OFF);
-}
-
-static int cmd_led_blink_slow(cli_t *cli, const cli_args_t *args, void *user) {
-    (void)user;
-    return led_apply_cmd(cli, args, LED_MODE_BLINK_SLOW);
-}
-
-static int cmd_led_blink_fast(cli_t *cli, const cli_args_t *args, void *user) {
-    (void)user;
-    return led_apply_cmd(cli, args, LED_MODE_BLINK_FAST);
-}
-
-static int cmd_led_traffic(cli_t *cli, const cli_args_t *args, void *user) {
-    (void)user;
-    return led_apply_cmd(cli, args, LED_MODE_TRAFFIC);
-}
-
-static const cli_cmd_t led_subs[] = {
-    { "on", "steady on", NULL, 0u, led_which_args, 1u, cmd_led_on },
-    { "off", "steady off", NULL, 0u, led_which_args, 1u, cmd_led_off },
-    { "blink-slow", "blink at ~1 Hz", NULL, 0u, led_which_args, 1u, cmd_led_blink_slow },
-    { "blink-fast", "blink at ~5 Hz", NULL, 0u, led_which_args, 1u, cmd_led_blink_fast },
-    { "traffic", "irregular router-style activity flicker", NULL, 0u, led_which_args, 1u, cmd_led_traffic },
-};
-
-static const cli_cmd_t commands[] = {
-    { "led", "LED control (led0=onboard, led1=GPIO17, led2=GPIO18)", led_subs,
-      sizeof(led_subs) / sizeof(led_subs[0]), NULL, 0u, NULL },
-};
-
-/* ------------------------------------------------------------------ */
 /* Console                                                              */
 /* ------------------------------------------------------------------ */
 
@@ -129,8 +68,8 @@ static cli_t cli;
 static void console_init(void) {
     cli_config_t cfg = cli_config_default();
 
-    cfg.commands = commands;
-    cfg.command_count = sizeof(commands) / sizeof(commands[0]);
+    cfg.commands = &led_cli_command;
+    cfg.command_count = 1u;
     cfg.getc_fn = cdc_getc;
     cfg.putc_fn = cdc_putc;
     cfg.prompt = "hdlcspy> ";
