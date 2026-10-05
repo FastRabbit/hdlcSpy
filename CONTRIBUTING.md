@@ -45,3 +45,24 @@ Changes land on `main` through short-lived feature branches, not direct commits.
   firmware source or build-config change).
 - `fw-reviewer` — read-only review of `fw/` changes before merging a feature branch
   (stdio/UART config, blocking waits, submodule pins, build hygiene).
+- `fw-cli-module` — scaffolds a new clipilot console command module (e.g. the `led`
+  command) and wires it into `fw/src/main.c`'s command registry.
+
+## Gotchas learned
+
+- **PR creation/merge tool outage**: if the app's PR tool reports the GitHub account
+  needs re-linking, fall back to the `gh` CLI (`gh pr create`, `gh pr merge --merge`)
+  — it uses its own token and keeps working independently of that link.
+- **Moving a submodule**: use `git mv <old-path> <new-path>` — it updates
+  `.gitmodules` and relocates the gitlink in one clean commit. After checking out a
+  branch on either side of such a move, stale/empty submodule directories can be
+  left behind; `rm -rf` them and re-run `git submodule update --init` for the path
+  the current branch expects.
+- **Session checkpoint refs**: the app stores local-only session checkpoints under
+  `refs/copilot/checkpoints/...`. They're safe to delete with
+  `git update-ref -d <ref>` (+ `git gc --prune=now`) without touching real branch
+  history — they are never pushed.
+- **clipilot command modules**: see the `fw-cli-module` agent — a new top-level
+  command needs a module exposing one `cli_cmd_t` singleton, registered with one
+  line in `app_command_sources[]` in `main.c`, not a hand-built static array (which
+  won't compile — see that agent for why).
