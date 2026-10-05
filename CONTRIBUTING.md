@@ -48,6 +48,17 @@ Changes land on `main` through short-lived feature branches, not direct commits.
 - `fw-cli-module` — scaffolds a new clipilot console command module (e.g. the `led`
   command) and wires it into `fw/src/main.c`'s command registry.
 
+## Instructions and skills
+
+Mirroring the structure used by the vendored `clipilot` submodule:
+
+- `.github/instructions/git-workflow.instructions.md` — condensed version of this
+  file's workflow, loaded automatically for branch/commit/PR work.
+- `.github/instructions/c-style.instructions.md` — C conventions for `fw/src/**`.
+- `.github/skills/fw-architecture/SKILL.md` — module map, invariants, and the
+  recipe for adding a new console command or LED-style driver feature.
+- `.github/skills/fw-build-test/SKILL.md` — the build/verify loop, submodule
+  bootstrap, and flashing steps.
 ## Gotchas learned
 
 - **PR creation/merge tool outage**: if the app's PR tool reports the GitHub account
