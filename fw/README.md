@@ -56,6 +56,7 @@ prompt). Available commands:
 - `help` — lists available commands
 - `history` — shows recently entered lines
 - `led <on|off|blink-slow|blink-fast|traffic> [which]` — LED control, see below
+- `tx-clock <enable|disable|on|off|frequency|status>` — TX clock control, see below
 
 ### LED control
 
@@ -76,3 +77,26 @@ hdlcspy> led blink-fast led2     # led2 only, ~5 Hz
 hdlcspy> led traffic             # irregular router-activity-style flicker
 hdlcspy> led off
 ```
+
+### TX clock control
+
+Two signals are involved:
+
+| name     | GPIO | purpose                                        |
+|----------|------|-------------------------------------------------|
+| enable   | 1    | gates an external clock buffer/driver           |
+| signal   | 0    | the clock itself, a PWM square wave, 1kHz..1MHz |
+
+The enable line and the clock signal are independent: `enable`/`disable`
+only drives GPIO1, `on`/`off` only starts/stops the PWM output on GPIO0.
+Frequency changes apply immediately, whether or not the output is running.
+
+```
+hdlcspy> tx-clock frequency 100000   # set to 100 kHz (clamped to 1000..1000000)
+hdlcspy> tx-clock on                 # start the PWM signal on GPIO0
+hdlcspy> tx-clock enable             # drive the GPIO1 enable line
+hdlcspy> tx-clock status             # enable=on output=on frequency=100000 Hz
+hdlcspy> tx-clock off
+hdlcspy> tx-clock disable
+```
+
