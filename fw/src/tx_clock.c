@@ -4,11 +4,20 @@
 #include "hardware/gpio.h"
 #include "hardware/pwm.h"
 
-static bool clock_enabled = false;
-static bool output_on = false;
-static uint32_t current_hz = TX_CLOCK_DEFAULT_HZ;
-static uint pwm_slice;
-static uint pwm_channel;
+/** All of this module's mutable state, grouped so it reads as one unit. */
+typedef struct {
+    bool enabled;      /**< GPIO1 enable line driven high */
+    bool output_on;    /**< PWM output on GPIO0 running */
+    uint32_t hz;        /**< currently programmed frequency */
+    uint pwm_slice;     /**< PWM slice backing TX_CLOCK_SIGNAL_PIN */
+    uint pwm_channel;   /**< PWM channel (A/B) within that slice */
+} tx_clock_state_t;
+
+static tx_clock_state_t state = {
+    .enabled = false,
+    .output_on = false,
+    .hz = TX_CLOCK_DEFAULT_HZ,
+};
 
 /**
  * @brief Reprograms the PWM slice's divider/wrap/level for a 50% duty square
@@ -38,43 +47,43 @@ static void tx_clock_apply_frequency(uint32_t hz) {
         wrap = 1u;
     }
 
-    pwm_set_clkdiv(pwm_slice, divider);
-    pwm_set_wrap(pwm_slice, (uint16_t)wrap);
-    pwm_set_chan_level(pwm_slice, pwm_channel, (uint16_t)((wrap + 1u) / 2u));
+    pwm_set_clkdiv(state.pwm_slice, divider);
+    pwm_set_wrap(state.pwm_slice, (uint16_t)wrap);
+    pwm_set_chan_level(state.pwm_slice, state.pwm_channel, (uint16_t)((wrap + 1u) / 2u));
 }
 
 void tx_clock_driver_init(void) {
     gpio_init(TX_CLOCK_ENABLE_PIN);
     gpio_set_dir(TX_CLOCK_ENABLE_PIN, GPIO_OUT);
     gpio_put(TX_CLOCK_ENABLE_PIN, false);
-    clock_enabled = false;
+    state.enabled = false;
 
     gpio_set_function(TX_CLOCK_SIGNAL_PIN, GPIO_FUNC_PWM);
-    pwm_slice = pwm_gpio_to_slice_num(TX_CLOCK_SIGNAL_PIN);
-    pwm_channel = pwm_gpio_to_channel(TX_CLOCK_SIGNAL_PIN);
+    state.pwm_slice = pwm_gpio_to_slice_num(TX_CLOCK_SIGNAL_PIN);
+    state.pwm_channel = pwm_gpio_to_channel(TX_CLOCK_SIGNAL_PIN);
 
-    current_hz = TX_CLOCK_DEFAULT_HZ;
-    tx_clock_apply_frequency(current_hz);
-    pwm_set_enabled(pwm_slice, false);
-    output_on = false;
+    state.hz = TX_CLOCK_DEFAULT_HZ;
+    tx_clock_apply_frequency(state.hz);
+    pwm_set_enabled(state.pwm_slice, false);
+    state.output_on = false;
 }
 
 void tx_clock_set_enabled(bool enabled) {
-    clock_enabled = enabled;
+    state.enabled = enabled;
     gpio_put(TX_CLOCK_ENABLE_PIN, enabled);
 }
 
 bool tx_clock_is_enabled(void) {
-    return clock_enabled;
+    return state.enabled;
 }
 
 void tx_clock_set_output(bool on) {
-    output_on = on;
-    pwm_set_enabled(pwm_slice, on);
+    state.output_on = on;
+    pwm_set_enabled(state.pwm_slice, on);
 }
 
 bool tx_clock_is_output_on(void) {
-    return output_on;
+    return state.output_on;
 }
 
 uint32_t tx_clock_set_frequency(uint32_t hz) {
@@ -84,13 +93,13 @@ uint32_t tx_clock_set_frequency(uint32_t hz) {
         hz = TX_CLOCK_MAX_HZ;
     }
 
-    current_hz = hz;
+    state.hz = hz;
     tx_clock_apply_frequency(hz);
     return hz;
 }
 
 uint32_t tx_clock_get_frequency(void) {
-    return current_hz;
+    return state.hz;
 }
 
 /* ------------------------------------------------------------------ */
