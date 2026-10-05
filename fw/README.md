@@ -51,9 +51,28 @@ After flashing, the board enumerates as a USB CDC virtual serial port.
 Connect to it (e.g. `screen /dev/tty.usbmodemXXXX 115200` on macOS, or the
 corresponding `/dev/ttyACMx` on Linux) to get an interactive
 [clipilot](https://github.com/FastRabbit/clipilot) console (`hdlcspy> `
-prompt). Only the built-in commands are wired up so far:
+prompt). Available commands:
 
 - `help` — lists available commands
 - `history` — shows recently entered lines
+- `led <on|off|blink-slow|blink-fast|traffic> [which]` — LED control, see below
 
-No application-specific commands are registered yet.
+### LED control
+
+Three LEDs are driven:
+
+| name   | location                  |
+|--------|----------------------------|
+| `led0` | onboard Pico 2 LED (`PICO_DEFAULT_LED_PIN`) |
+| `led1` | GPIO17                     |
+| `led2` | GPIO18                     |
+
+`which` is optional and defaults to `all`. Examples:
+
+```
+hdlcspy> led on led1
+hdlcspy> led blink-slow          # all LEDs, ~1 Hz
+hdlcspy> led blink-fast led2     # led2 only, ~5 Hz
+hdlcspy> led traffic             # irregular router-activity-style flicker
+hdlcspy> led off
+```
