@@ -6,20 +6,21 @@ physical UART is used for stdio).
 
 ## Fresh clone: initialize submodules
 
-This repo vendors the Pico SDK as a git submodule at `fw/pico-sdk`, along
-with the nested submodules it needs (tinyusb, mbedtls, cyw43-driver,
+This repo vendors the Pico SDK as a git submodule at `fw/external/pico-sdk`,
+along with the nested submodules it needs (tinyusb, mbedtls, cyw43-driver,
 btstack, lwip), plus the [clipilot](https://github.com/FastRabbit/clipilot)
-CLI library as a submodule at `fw/clipilot`. After cloning hdlcSpy, run:
+CLI library as a submodule at `fw/external/clipilot`. After cloning hdlcSpy,
+run:
 
 ```sh
-git submodule update --init --recursive fw/pico-sdk fw/clipilot
+git submodule update --init --recursive fw/external/pico-sdk fw/external/clipilot
 ```
 
 Or, if you prefer to fetch only the nested libs the Pico SDK needs:
 
 ```sh
-git submodule update --init fw/pico-sdk fw/clipilot
-cd fw/pico-sdk
+git submodule update --init fw/external/pico-sdk fw/external/clipilot
+cd fw/external/pico-sdk
 git submodule update --init --depth 1 lib/tinyusb lib/mbedtls lib/cyw43-driver lib/btstack lib/lwip
 ```
 
@@ -30,7 +31,7 @@ Requires the `arm-none-eabi` GCC toolchain, CMake, and Ninja (or Make).
 ```sh
 cd fw
 mkdir build && cd build
-cmake -G Ninja -DPICO_SDK_PATH=../pico-sdk ..
+cmake -G Ninja -DPICO_SDK_PATH=../external/pico-sdk ..
 ninja
 ```
 

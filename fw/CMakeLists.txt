@@ -14,7 +14,7 @@ pico_sdk_init()
 # clipilot's own tests/host demo are host programs; don't build them for the target.
 set(CLI_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(CLI_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-add_subdirectory(clipilot)
+add_subdirectory(external/clipilot)
 
 add_executable(hdlcspy_fw
     src/main.c

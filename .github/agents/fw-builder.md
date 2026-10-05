@@ -12,19 +12,20 @@ always run the real build.
 ## Environment
 
 - Toolchain: `arm-none-eabi-gcc`, `cmake`, `ninja` must be on PATH.
-- SDK: the Pico SDK is vendored as a git submodule at `fw/pico-sdk`, with nested
-  submodules `lib/tinyusb`, `lib/mbedtls`, `lib/cyw43-driver`, `lib/btstack`,
-  `lib/lwip`. If any are missing, initialize them:
+- SDK: the Pico SDK is vendored as a git submodule at `fw/external/pico-sdk`, with
+  nested submodules `lib/tinyusb`, `lib/mbedtls`, `lib/cyw43-driver`, `lib/btstack`,
+  `lib/lwip`. The clipilot CLI library is vendored at `fw/external/clipilot`. If any
+  are missing, initialize them:
   ```sh
-  git submodule update --init fw/pico-sdk
-  cd fw/pico-sdk && git submodule update --init --depth 1 \
+  git submodule update --init fw/external/pico-sdk fw/external/clipilot
+  cd fw/external/pico-sdk && git submodule update --init --depth 1 \
     lib/tinyusb lib/mbedtls lib/cyw43-driver lib/btstack lib/lwip
   ```
 
 ## Procedure
 
 1. `cd fw && mkdir -p build && cd build`
-2. `cmake -G Ninja -DPICO_SDK_PATH=../pico-sdk ..`
+2. `cmake -G Ninja -DPICO_SDK_PATH=../external/pico-sdk ..`
 3. `ninja hdlcspy_fw`
 4. Confirm `build/hdlcspy_fw.uf2` exists and is non-trivial in size (tens of KB).
 5. Report the build result (pass/fail, warnings worth noting). Leave `fw/build/`
