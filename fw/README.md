@@ -8,16 +8,17 @@ physical UART is used for stdio).
 
 This repo vendors the Pico SDK as a git submodule at `fw/pico-sdk`, along
 with the nested submodules it needs (tinyusb, mbedtls, cyw43-driver,
-btstack, lwip). After cloning hdlcSpy, run:
+btstack, lwip), plus the [clipilot](https://github.com/FastRabbit/clipilot)
+CLI library as a submodule at `fw/clipilot`. After cloning hdlcSpy, run:
 
 ```sh
-git submodule update --init --recursive fw/pico-sdk
+git submodule update --init --recursive fw/pico-sdk fw/clipilot
 ```
 
-Or, if you prefer to fetch only the nested libs this firmware needs:
+Or, if you prefer to fetch only the nested libs the Pico SDK needs:
 
 ```sh
-git submodule update --init fw/pico-sdk
+git submodule update --init fw/pico-sdk fw/clipilot
 cd fw/pico-sdk
 git submodule update --init --depth 1 lib/tinyusb lib/mbedtls lib/cyw43-driver lib/btstack lib/lwip
 ```
@@ -47,5 +48,11 @@ This produces `hdlcspy_fw.uf2` (plus `.elf`/`.bin`/`.hex`) in `fw/build/`.
 
 After flashing, the board enumerates as a USB CDC virtual serial port.
 Connect to it (e.g. `screen /dev/tty.usbmodemXXXX 115200` on macOS, or the
-corresponding `/dev/ttyACMx` on Linux) to see the counter printed once per
-second.
+corresponding `/dev/ttyACMx` on Linux) to get an interactive
+[clipilot](https://github.com/FastRabbit/clipilot) console (`hdlcspy> `
+prompt). Only the built-in commands are wired up so far:
+
+- `help` — lists available commands
+- `history` — shows recently entered lines
+
+No application-specific commands are registered yet.

@@ -11,6 +11,11 @@ set(CMAKE_CXX_STANDARD 17)
 
 pico_sdk_init()
 
+# clipilot's own tests/host demo are host programs; don't build them for the target.
+set(CLI_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(CLI_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+add_subdirectory(clipilot)
+
 add_executable(hdlcspy_fw
     src/main.c
 )
@@ -20,6 +25,7 @@ pico_enable_stdio_uart(hdlcspy_fw 0)
 
 target_link_libraries(hdlcspy_fw
     pico_stdlib
+    clipilot::clipilot
 )
 
 pico_add_extra_outputs(hdlcspy_fw)

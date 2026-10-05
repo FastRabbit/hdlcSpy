@@ -2,3 +2,6 @@
 	path = fw/pico-sdk
 	url = https://github.com/raspberrypi/pico-sdk.git
 	branch = master
+[submodule "fw/clipilot"]
+	path = fw/clipilot
+	url = https://github.com/FastRabbit/clipilot.git
