@@ -36,6 +36,8 @@ Changes land on `main` through short-lived feature branches, not direct commits.
 - `fw/` — Raspberry Pi Pico 2 (RP2350) firmware, Pico SDK-based. See `fw/README.md`
   for build/flash instructions and submodule setup.
 - `hw/` — KiCad hardware design (schematic/PCB).
+- `doc/` — project-level documentation (architecture, hardware, firmware
+  behavior); start at `doc/README.md`.
 
 ## Custom agents
 
