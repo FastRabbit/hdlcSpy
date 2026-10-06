@@ -38,6 +38,17 @@ void tx_clock_set_output(bool on);
 bool tx_clock_is_output_on(void);
 
 /**
+ * @brief Inverts (true) or restores (false) the clock signal's polarity.
+ *
+ * Flips the PWM channel's output polarity in hardware, so it takes effect
+ * immediately and applies whether or not the output is currently running.
+ */
+void tx_clock_set_inverted(bool inverted);
+
+/** @brief Returns whether the clock signal's polarity is currently inverted. */
+bool tx_clock_is_inverted(void);
+
+/**
  * @brief Sets the TX clock frequency, clamped to
  * [TX_CLOCK_MIN_HZ, TX_CLOCK_MAX_HZ].
  * @return the frequency actually applied, after clamping.
@@ -48,8 +59,8 @@ uint32_t tx_clock_set_frequency(uint32_t hz);
 uint32_t tx_clock_get_frequency(void);
 
 /**
- * @brief The `tx-clock` clipilot command (enable/disable, on/off, frequency,
- * and status subcommands already wired up).
+ * @brief The `tx-clock` clipilot command (enable/disable, on/off, invert,
+ * frequency, and status subcommands already wired up).
  *
  * Drop this into an application's cli_cmd_t registry alongside other
  * modules' singletons, e.g. in main.c's app_command_sources[]:
