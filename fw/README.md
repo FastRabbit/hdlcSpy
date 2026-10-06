@@ -56,7 +56,7 @@ prompt). Available commands:
 - `help` — lists available commands
 - `history` — shows recently entered lines
 - `led <on|off|blink-slow|blink-fast|traffic> [which]` — LED control, see below
-- `tx-clock <enable|disable|on|off|frequency|status>` — TX clock control, see below
+- `tx-clock <enable|disable|on|off|invert|frequency|status>` — TX clock control, see below
 
 ### LED control
 
@@ -90,12 +90,15 @@ Two signals are involved:
 The enable line and the clock signal are independent: `enable`/`disable`
 only drives GPIO1, `on`/`off` only starts/stops the PWM output on GPIO0.
 Frequency changes apply immediately, whether or not the output is running.
+`invert` flips the signal's polarity in hardware and also applies
+immediately, whether or not the output is running.
 
 ```
 hdlcspy> tx-clock frequency 100000   # set to 100 kHz (clamped to 1000..1000000)
+hdlcspy> tx-clock invert on          # flip the signal's polarity
 hdlcspy> tx-clock on                 # start the PWM signal on GPIO0
 hdlcspy> tx-clock enable             # drive the GPIO1 enable line
-hdlcspy> tx-clock status             # enable=on output=on frequency=100000 Hz
+hdlcspy> tx-clock status             # enable=on output=on invert=on frequency=100000 Hz
 hdlcspy> tx-clock off
 hdlcspy> tx-clock disable
 ```

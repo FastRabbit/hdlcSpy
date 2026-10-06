@@ -56,6 +56,7 @@ attached, so `traffic` mode is visible without a host connected.
 
 ```
 tx-clock <enable|disable|on|off|status>
+tx-clock invert <on|off>
 tx-clock frequency <hz>
 ```
 
@@ -63,9 +64,11 @@ tx-clock frequency <hz>
   external clock buffer/driver).
 - `on` / `off` — start/stop the clock signal itself: a 50% duty PWM square
   wave on GPIO0, independent of the enable line.
+- `invert <on|off>` — flips the clock signal's polarity in hardware;
+  applies immediately whether or not the output is currently running.
 - `frequency <hz>` — sets the clock frequency, clamped to 1kHz..1MHz;
   applies immediately whether or not the output is currently running.
-- `status` — prints the current enable/output/frequency state.
+- `status` — prints the current enable/output/invert/frequency state.
 
 See [`architecture.md`](architecture.md) for how `led` (and future
 modules' commands) get wired into the CLI, and

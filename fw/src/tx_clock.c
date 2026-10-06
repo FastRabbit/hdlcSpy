@@ -6,8 +6,9 @@
 
 /** All of this module's mutable state, grouped so it reads as one unit. */
 typedef struct {
-    bool enabled;      /**< GPIO1 enable line driven high */
-    bool output_on;    /**< PWM output on GPIO0 running */
+    bool enabled;       /**< GPIO1 enable line driven high */
+    bool output_on;     /**< PWM output on GPIO0 running */
+    bool inverted;      /**< PWM channel polarity inverted */
     uint32_t hz;        /**< currently programmed frequency */
     uint pwm_slice;     /**< PWM slice backing TX_CLOCK_SIGNAL_PIN */
     uint pwm_channel;   /**< PWM channel (A/B) within that slice */
@@ -16,8 +17,17 @@ typedef struct {
 static tx_clock_state_t state = {
     .enabled = false,
     .output_on = false,
+    .inverted = false,
     .hz = TX_CLOCK_DEFAULT_HZ,
 };
+
+/** Reapplies state.inverted to the PWM channel's output polarity. */
+static void tx_clock_apply_polarity(void) {
+    bool invert_a = (state.pwm_channel == PWM_CHAN_A) && state.inverted;
+    bool invert_b = (state.pwm_channel == PWM_CHAN_B) && state.inverted;
+
+    pwm_set_output_polarity(state.pwm_slice, invert_a, invert_b);
+}
 
 /**
  * @brief Reprograms the PWM slice's divider/wrap/level for a 50% duty square
@@ -64,6 +74,8 @@ void tx_clock_driver_init(void) {
 
     state.hz = TX_CLOCK_DEFAULT_HZ;
     tx_clock_apply_frequency(state.hz);
+    state.inverted = false;
+    tx_clock_apply_polarity();
     pwm_set_enabled(state.pwm_slice, false);
     state.output_on = false;
 }
@@ -84,6 +96,15 @@ void tx_clock_set_output(bool on) {
 
 bool tx_clock_is_output_on(void) {
     return state.output_on;
+}
+
+void tx_clock_set_inverted(bool inverted) {
+    state.inverted = inverted;
+    tx_clock_apply_polarity();
+}
+
+bool tx_clock_is_inverted(void) {
+    return state.inverted;
 }
 
 uint32_t tx_clock_set_frequency(uint32_t hz) {
@@ -139,6 +160,20 @@ static int cmd_tx_clock_off(cli_t *cli, const cli_args_t *args, void *user) {
     return 0;
 }
 
+static const cli_arg_spec_t tx_clock_invert_args[] = {
+    { "state", CLI_ARG_BOOL, false, false, NULL, "on/off, true/false, yes/no, 1/0" },
+};
+
+static int cmd_tx_clock_invert(cli_t *cli, const cli_args_t *args, void *user) {
+    bool inverted;
+
+    (void)user;
+    inverted = cli_arg_bool(args, 0u, false);
+    tx_clock_set_inverted(inverted);
+    cli_printf(cli, "tx-clock invert -> %s\n", inverted ? "on" : "off");
+    return 0;
+}
+
 static const cli_arg_spec_t tx_clock_frequency_args[] = {
     { "hz", CLI_ARG_UINT, false, false, NULL, "1000..1000000, clamped if out of range" },
 };
@@ -163,9 +198,9 @@ static int cmd_tx_clock_frequency(cli_t *cli, const cli_args_t *args, void *user
 static int cmd_tx_clock_status(cli_t *cli, const cli_args_t *args, void *user) {
     (void)args;
     (void)user;
-    cli_printf(cli, "tx-clock: enable=%s output=%s frequency=%u Hz\n",
+    cli_printf(cli, "tx-clock: enable=%s output=%s invert=%s frequency=%u Hz\n",
                tx_clock_is_enabled() ? "on" : "off", tx_clock_is_output_on() ? "on" : "off",
-               (unsigned)tx_clock_get_frequency());
+               tx_clock_is_inverted() ? "on" : "off", (unsigned)tx_clock_get_frequency());
     return 0;
 }
 
@@ -174,9 +209,11 @@ static const cli_cmd_t tx_clock_subs[] = {
     { "disable", "release the TX clock enable line (GPIO1)", NULL, 0u, NULL, 0u, cmd_tx_clock_disable },
     { "on", "start the TX clock signal (GPIO0)", NULL, 0u, NULL, 0u, cmd_tx_clock_on },
     { "off", "stop the TX clock signal (GPIO0)", NULL, 0u, NULL, 0u, cmd_tx_clock_off },
+    { "invert", "invert the TX clock signal polarity", NULL, 0u, tx_clock_invert_args, 1u,
+      cmd_tx_clock_invert },
     { "frequency", "set the TX clock frequency in Hz", NULL, 0u, tx_clock_frequency_args, 1u,
       cmd_tx_clock_frequency },
-    { "status", "show enable/output/frequency state", NULL, 0u, NULL, 0u, cmd_tx_clock_status },
+    { "status", "show enable/output/invert/frequency state", NULL, 0u, NULL, 0u, cmd_tx_clock_status },
 };
 
 const cli_cmd_t tx_clock_cli_command = {
