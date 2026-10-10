@@ -20,6 +20,7 @@ add_executable(hdlcspy_fw
     src/main.c
     src/led.c
     src/tx_clock.c
+    src/tx.c
 )
 
 pico_enable_stdio_usb(hdlcspy_fw 1)

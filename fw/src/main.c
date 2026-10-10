@@ -6,6 +6,7 @@
 #include "cli.h"
 #include "led.h"
 #include "tx_clock.h"
+#include "tx.h"
 
 /* ------------------------------------------------------------------ */
 /* Console I/O over USB CDC                                            */
@@ -72,6 +73,7 @@ static void print_banner(void) {
 static const cli_cmd_t *const app_command_sources[] = {
     &led_cli_command,
     &tx_clock_cli_command,
+    &tx_cli_command,
 };
 #define APP_COMMAND_COUNT (sizeof(app_command_sources) / sizeof(app_command_sources[0]))
 
@@ -111,6 +113,7 @@ int main(void) {
     stdio_init_all();
     led_driver_init();
     tx_clock_driver_init();
+    tx_driver_init();
     app_commands_init();
 
     /*

@@ -5,4 +5,14 @@
 			"path": ".",
 		},
 	],
+	"settings":
+	{
+		"LSP":
+		{
+			"LSP-clangd":
+			{
+				"enabled": true
+			}
+		}
+	},
 }
