@@ -46,12 +46,12 @@ static void cdc_banner(const char *s) {
 
 static void print_banner(void) {
     cdc_banner("\n");
-    cdc_banner(" _          _ _      ____              \n");
-    cdc_banner("| |__    __| | | ___/ ___| _ __  _   _  \n");
-    cdc_banner("| '_ \\  / _` | |/ __\\___ \\| '_ \\| | | | \n");
-    cdc_banner("| | | || (_| | | (__ ___) | |_) | |_| | \n");
-    cdc_banner("|_| |_| \\__,_|_|\\___|____/| .__/ \\__, | \n");
-    cdc_banner("                          |_|    |___/  \n");
+    // cdc_banner(" _          _ _      ____              \n");
+    // cdc_banner("| |__    __| | | ___/ ___| _ __  _   _  \n");
+    // cdc_banner("| '_ \\  / _` | |/ __\\___ \\| '_ \\| | | | \n");
+    // cdc_banner("| | | || (_| | | (__ ___) | |_) | |_| | \n");
+    // cdc_banner("|_| |_| \\__,_|_|\\___|____/| .__/ \\__, | \n");
+    // cdc_banner("                          |_|    |___/  \n");
     cdc_banner(" USB CDC connected -- hdlcspy_fw ready\n");
     cdc_banner("\n");
 }
@@ -118,6 +118,9 @@ int main(void) {
      * the console is (re-)initialised on each connect. That also gives a
      * terminal attached long after boot a banner and a prompt.
      */
+
+    led_set_mode(0, LED_MODE_BLINK_SLOW);
+
     for (;;) {
         bool connected = stdio_usb_connected();
 

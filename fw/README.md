@@ -32,7 +32,24 @@ Requires the `arm-none-eabi` GCC toolchain, CMake, and Ninja (or Make).
 cd fw
 mkdir build && cd build
 cmake -G Ninja -DPICO_SDK_PATH=../external/pico-sdk ..
-ninja
+yninja
+```
+
+## Debug with Pi Debug Probe
+
+```sh
+cd fw/build
+openocd -f interface/cmsis-dap.cfg -f target/rp2350.cfg -c "adapter speed 5000"
+openocd -f interface/cmsis-dap.cfg -f target/rp2350.cfg -c "adapter speed 5000" -c "program hdlcspy_fw.elf verify reset exit"
+
+```
+
+```sh
+cd fw/build
+arm-none-eabi-gdb hdlcspy_fw.elf
+target remote localhost:3333
+monitor reset init
+continue
 ```
 
 This produces `hdlcspy_fw.uf2` (plus `.elf`/`.bin`/`.hex`) in `fw/build/`.
@@ -46,6 +63,8 @@ This produces `hdlcspy_fw.uf2` (plus `.elf`/`.bin`/`.hex`) in `fw/build/`.
    automatically reboot and run the firmware.
 
 ## Serial console
+
+minicom -b 115200 -o -D /dev/
 
 After flashing, the board enumerates as a USB CDC virtual serial port.
 Connect to it (e.g. `screen /dev/tty.usbmodemXXXX 115200` on macOS, or the
