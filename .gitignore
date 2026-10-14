@@ -4,3 +4,4 @@ hw/hdlcSpy/.hdlcSpy.sublime-workspace
 hw/hdlcSpy/Generated/
 hw/hdlcSpy/hdlcSpy-backups/
 .hdlcSpy.sublime-workspace
+fw/.cache/
