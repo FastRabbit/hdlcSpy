@@ -209,10 +209,8 @@ static const cli_cmd_t tx_clock_subs[] = {
     { "disable", "release the TX clock enable line (GPIO1)", NULL, 0u, NULL, 0u, cmd_tx_clock_disable },
     { "on", "start the TX clock signal (GPIO0)", NULL, 0u, NULL, 0u, cmd_tx_clock_on },
     { "off", "stop the TX clock signal (GPIO0)", NULL, 0u, NULL, 0u, cmd_tx_clock_off },
-    { "invert", "invert the TX clock signal polarity", NULL, 0u, tx_clock_invert_args, 1u,
-      cmd_tx_clock_invert },
-    { "frequency", "set the TX clock frequency in Hz", NULL, 0u, tx_clock_frequency_args, 1u,
-      cmd_tx_clock_frequency },
+    { "invert", "invert the TX clock signal polarity", NULL, 0u, tx_clock_invert_args, 1u, cmd_tx_clock_invert },
+    { "frequency", "set the TX clock frequency in Hz", NULL, 0u, tx_clock_frequency_args, 1u, cmd_tx_clock_frequency },
     { "status", "show enable/output/invert/frequency state", NULL, 0u, NULL, 0u, cmd_tx_clock_status },
 };
 

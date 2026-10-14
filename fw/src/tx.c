@@ -2,7 +2,6 @@
 
 #include "hardware/clocks.h"
 #include "hardware/gpio.h"
-#include <cstddef>
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -43,9 +42,9 @@ void wait_clk_edge(bool high) {
 }
 
 void tx_send_bit(uint8_t bit) {
-    wait_clk_edge(high);
+    wait_clk_edge(true);
     gpio_put(tx_pin, bit ? 1u : 0u);
-    wait_clk_edge(low);
+    wait_clk_edge(false);
 }
 
 void tx_send(uint8_t data, bool bit_stuff) {
@@ -72,33 +71,46 @@ void tx_send(uint8_t data, bool bit_stuff) {
 }
 
 
-void cmd_tx_set(cli_t *cli, const cli_args_t *args, void *user) {
+static int cmd_tx_set(cli_t *cli, const cli_args_t *args, void *user) {
     (void)cli;
     (void)user;
     bool state = cli_arg_bool(args, 0u, false);
     gpio_put(tx_pin, state ? 1u : 0u);
+    return 0;
 }
 
 
-void cmd_tx_abort(cli_t *cli, const cli_args_t *args, void *user) {
+static int cmd_tx_abort(cli_t *cli, const cli_args_t *args, void *user) {
     (void)cli;
     (void)args;
     (void)user;
     tx_send(hdlc_abort, false);
+    return 0;
 }
 
-void cli_cmd_tx_flag(cli_t *cli, const cli_args_t *args, void *user) {
+static int cmd_tx_flag(cli_t *cli, const cli_args_t *args, void *user) {
     (void)cli;
     (void)args;
     (void)user;
     tx_send(hdlc_flag, false);
+    return 0;
 }
 
-void cmd_tx_send(cli_t *cli, const cli_args_t *args, void *user) {
+static int cmd_tx_send(cli_t *cli, const cli_args_t *args, void *user) {
     (void)cli;
     (void)user;
-    uint8_t data = (uint8_t)cli_arg_uint(args, 0u, 0u);
+    uint8_t data = (uint8_t) cli_arg_uint(args, 0, 0);
+    uint8_t count = (uint8_t) cli_arg_uint(args, 1, 1);
     tx_send(data, true);
+    return 0;
+}
+
+static int cmd_tx(cli_t *cli, const cli_args_t *args, void *user) {
+    // (void)cli;
+    (void)args;
+    (void)user;
+    cli_write(cli, "plain tx called\n");
+    return 0;
 }
 
 static const cli_arg_spec_t tx_set_args[] = {
@@ -106,17 +118,18 @@ static const cli_arg_spec_t tx_set_args[] = {
 };
 
 static const cli_arg_spec_t tx_send_args[] = {
-    { "state", CLI_ARG_UINT, false, false, NULL, "0..255" },
+    { "data", CLI_ARG_UINT, false, false, NULL, "data byte to send 0..255" },
+    { "count", CLI_ARG_UINT, true, false, NULL, "number of repeats, default to 1"},
 };
 
 static const cli_cmd_t tx_subs[] = {
     { "set", "set the TX pin low/high", NULL, 0u, tx_set_args, 1u, cmd_tx_set },
     { "abort", "send the HDLC Abort ", NULL, 0u, NULL, 0u, cmd_tx_abort },
     { "flag", "send the HDLC Flag 0x7E", NULL, 0u, NULL, 0u, cmd_tx_flag },
-    { "send", "send a byte over TX", NULL, 0u, tx_set_args, 1u, cmd_tx_send },
+    { "send", "send a byte over TX", NULL, 0u, tx_send_args, 1u, cmd_tx_send },
 };    
 
-const cli_cmd_t tx_clock_cli_command = {
+const cli_cmd_t tx_cli_command = {
     "tx", "TX bit bang commands", tx_subs,
-    sizeof(tx_subs) / sizeof(tx_subs[0]), NULL, 0u, NULL
+    sizeof(tx_subs) / sizeof(tx_subs[0]), NULL, 0u, cmd_tx
 };
