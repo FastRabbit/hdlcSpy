@@ -78,6 +78,12 @@ void tx_clock_driver_init(void) {
     tx_clock_apply_polarity();
     pwm_set_enabled(state.pwm_slice, false);
     state.output_on = false;
+
+    // Avoid typing all cmds during developing
+    gpio_put(TX_CLOCK_ENABLE_PIN, true);
+    pwm_set_enabled(state.pwm_slice, true);
+    state.output_on = true;
+
 }
 
 void tx_clock_set_enabled(bool enabled) {
@@ -147,8 +153,7 @@ static int cmd_tx_clock_on(cli_t *cli, const cli_args_t *args, void *user) {
     (void)args;
     (void)user;
     tx_clock_set_output(true);
-    cli_printf(cli, "tx-clock on -> %u Hz on GPIO%u\n", (unsigned)tx_clock_get_frequency(),
-               (unsigned)TX_CLOCK_SIGNAL_PIN);
+    cli_printf(cli, "tx-clock on -> %u Hz on GPIO%u\n", (unsigned)tx_clock_get_frequency(), (unsigned)TX_CLOCK_SIGNAL_PIN);
     return 0;
 }
 
@@ -187,8 +192,7 @@ static int cmd_tx_clock_frequency(cli_t *cli, const cli_args_t *args, void *user
     applied = tx_clock_set_frequency(requested);
 
     if (applied != requested) {
-        cli_printf(cli, "requested %u Hz out of range, clamped to %u Hz\n", (unsigned)requested,
-                   (unsigned)applied);
+        cli_printf(cli, "requested %u Hz out of range, clamped to %u Hz\n", (unsigned)requested, (unsigned)applied);
     } else {
         cli_printf(cli, "tx-clock frequency -> %u Hz\n", (unsigned)applied);
     }
@@ -209,10 +213,8 @@ static const cli_cmd_t tx_clock_subs[] = {
     { "disable", "release the TX clock enable line (GPIO1)", NULL, 0u, NULL, 0u, cmd_tx_clock_disable },
     { "on", "start the TX clock signal (GPIO0)", NULL, 0u, NULL, 0u, cmd_tx_clock_on },
     { "off", "stop the TX clock signal (GPIO0)", NULL, 0u, NULL, 0u, cmd_tx_clock_off },
-    { "invert", "invert the TX clock signal polarity", NULL, 0u, tx_clock_invert_args, 1u,
-      cmd_tx_clock_invert },
-    { "frequency", "set the TX clock frequency in Hz", NULL, 0u, tx_clock_frequency_args, 1u,
-      cmd_tx_clock_frequency },
+    { "invert", "invert the TX clock signal polarity", NULL, 0u, tx_clock_invert_args, 1u, cmd_tx_clock_invert },
+    { "frequency", "set the TX clock frequency in Hz", NULL, 0u, tx_clock_frequency_args, 1u, cmd_tx_clock_frequency },
     { "status", "show enable/output/invert/frequency state", NULL, 0u, NULL, 0u, cmd_tx_clock_status },
 };
 

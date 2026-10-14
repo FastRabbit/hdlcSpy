@@ -7,6 +7,8 @@
 #include "led.h"
 #include "tx_clock.h"
 #include "tx.h"
+#include "spy.h"
+#include "sys.h"
 
 /* ------------------------------------------------------------------ */
 /* Console I/O over USB CDC                                            */
@@ -74,6 +76,8 @@ static const cli_cmd_t *const app_command_sources[] = {
     &led_cli_command,
     &tx_clock_cli_command,
     &tx_cli_command,
+    &sys_cli_comamnd,
+    &spy_cli_command,
 };
 #define APP_COMMAND_COUNT (sizeof(app_command_sources) / sizeof(app_command_sources[0]))
 
@@ -105,6 +109,7 @@ static void console_init(void) {
     cfg.crlf = true;
 
     cli_init(&cli, &cfg);
+
 }
 
 int main(void) {
@@ -114,6 +119,8 @@ int main(void) {
     led_driver_init();
     tx_clock_driver_init();
     tx_driver_init();
+    spy_init();
+    sys_init();
     app_commands_init();
 
     /*
@@ -121,17 +128,21 @@ int main(void) {
      * the console is (re-)initialised on each connect. That also gives a
      * terminal attached long after boot a banner and a prompt.
      */
+    led_set_mode(0, LED_MODE_BLINK_SLUG);
     for (;;) {
         bool connected = stdio_usb_connected();
 
         if (connected && !usb_was_connected) {
             print_banner();
             console_init();
+            led_set_mode(0, LED_MODE_BLINK_SLOW);
         }
         usb_was_connected = connected;
 
         if (connected) {
             cli_poll(&cli);
+        } else {
+            led_set_mode(0, LED_MODE_BLINK_SLUG);
         }
 
         /* Keeps blinking/traffic patterns alive even without a host attached. */

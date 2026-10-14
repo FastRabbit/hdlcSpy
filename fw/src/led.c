@@ -9,6 +9,7 @@
 const char *const led_names[] = { "led0", "led1", "led2", "all", NULL };
 
 /* Blink periods, in milliseconds between toggles (half the visible period). */
+#define LED_BLINK_SLUG_PERIOD_MS 1000u
 #define LED_BLINK_SLOW_PERIOD_MS 500u
 #define LED_BLINK_FAST_PERIOD_MS 100u
 
@@ -21,6 +22,7 @@ const char *const led_names[] = { "led0", "led1", "led2", "all", NULL };
 typedef struct {
     uint32_t pin;
     led_mode_t mode;
+    uint32_t periode;
     bool state;              /**< current GPIO level */
     uint32_t next_ms;         /**< next scheduled transition */
     bool traffic_flash_active; /**< traffic mode sub-state */
@@ -58,48 +60,45 @@ void led_driver_init(void) {
 
 static void led_tick_one(led_t *led, uint32_t now_ms) {
     switch (led->mode) {
-    case LED_MODE_OFF:
-        if (led->state) {
-            led_apply(led, false);
-        }
-        break;
 
-    case LED_MODE_ON:
-        if (!led->state) {
-            led_apply(led, true);
-        }
-        break;
-
-    case LED_MODE_BLINK_SLOW:
-    case LED_MODE_BLINK_FAST: {
-        uint32_t period = (led->mode == LED_MODE_BLINK_SLOW)
-                               ? LED_BLINK_SLOW_PERIOD_MS
-                               : LED_BLINK_FAST_PERIOD_MS;
-
-        if ((int32_t)(now_ms - led->next_ms) >= 0) {
-            led_apply(led, !led->state);
-            led->next_ms = now_ms + period;
-        }
-        break;
-    }
-
-    case LED_MODE_TRAFFIC:
-        if ((int32_t)(now_ms - led->next_ms) >= 0) {
-            if (led->traffic_flash_active) {
+        case LED_MODE_OFF:
+            if (led->state) {
                 led_apply(led, false);
-                led->next_ms = now_ms + rand_range(LED_TRAFFIC_GAP_MIN_MS, LED_TRAFFIC_GAP_MAX_MS);
-                led->traffic_flash_active = false;
-            } else {
-                led_apply(led, true);
-                led->next_ms = now_ms + rand_range(LED_TRAFFIC_FLASH_MIN_MS, LED_TRAFFIC_FLASH_MAX_MS);
-                led->traffic_flash_active = true;
             }
-        }
-        break;
+            break;
 
-    default:
-        break;
-    }
+        case LED_MODE_ON:
+            if (!led->state) {
+                led_apply(led, true);
+            }
+            break;
+
+        case LED_MODE_BLINK_SLUG:
+        case LED_MODE_BLINK_SLOW:
+        case LED_MODE_BLINK_FAST:
+            if ((int32_t)(now_ms - led->next_ms) >= 0) {
+                led_apply(led, !led->state);
+                led->next_ms = now_ms + led->periode;
+            }
+            break;
+
+        case LED_MODE_TRAFFIC:
+            if ((int32_t)(now_ms - led->next_ms) >= 0) {
+                if (led->traffic_flash_active) {
+                    led_apply(led, false);
+                    led->next_ms = now_ms + rand_range(LED_TRAFFIC_GAP_MIN_MS, LED_TRAFFIC_GAP_MAX_MS);
+                    led->traffic_flash_active = false;
+                } else {
+                    led_apply(led, true);
+                    led->next_ms = now_ms + rand_range(LED_TRAFFIC_FLASH_MIN_MS, LED_TRAFFIC_FLASH_MAX_MS);
+                    led->traffic_flash_active = true;
+                }
+            }
+            break;
+
+        default:
+            break;
+        }
 }
 
 void led_driver_tick(uint32_t now_ms) {
@@ -115,11 +114,13 @@ static void led_enter_mode(led_t *led, led_mode_t mode, uint32_t now_ms) {
     led->traffic_flash_active = false;
     led->next_ms = now_ms;
 
-    /* Steady modes take effect immediately; blink/traffic apply on the next tick. */
-    if (mode == LED_MODE_OFF) {
-        led_apply(led, false);
-    } else if (mode == LED_MODE_ON) {
-        led_apply(led, true);
+    switch (mode) {
+        case LED_MODE_BLINK_SLUG: led->periode = LED_BLINK_SLUG_PERIOD_MS; break;
+        case LED_MODE_BLINK_SLOW: led->periode = LED_BLINK_SLOW_PERIOD_MS; break;
+        case LED_MODE_BLINK_FAST: led->periode = LED_BLINK_FAST_PERIOD_MS; break;
+        case LED_MODE_OFF: led_apply(led, false); break;
+        case LED_MODE_ON: led_apply(led, true); break;
+        default: break;
     }
 }
 
@@ -129,6 +130,7 @@ void led_set_mode(uint32_t index, led_mode_t mode) {
     if (index >= LED_COUNT) {
         return;
     }
+
     now_ms = to_ms_since_boot(get_absolute_time());
     led_enter_mode(&leds[index], mode, now_ms);
 }
@@ -147,6 +149,8 @@ const char *led_mode_name(led_mode_t mode) {
         return "off";
     case LED_MODE_ON:
         return "on";
+    case LED_MODE_BLINK_SLUG:
+        return "blink-slug";
     case LED_MODE_BLINK_SLOW:
         return "blink-slow";
     case LED_MODE_BLINK_FAST:
@@ -191,6 +195,11 @@ static int cmd_led_off(cli_t *cli, const cli_args_t *args, void *user) {
     return led_apply_cmd(cli, args, LED_MODE_OFF);
 }
 
+static int cmd_led_blink_slug(cli_t *cli, const cli_args_t *args, void *user) {
+    (void)user;
+    return led_apply_cmd(cli, args, LED_MODE_BLINK_SLUG);
+}
+
 static int cmd_led_blink_slow(cli_t *cli, const cli_args_t *args, void *user) {
     (void)user;
     return led_apply_cmd(cli, args, LED_MODE_BLINK_SLOW);
@@ -209,6 +218,7 @@ static int cmd_led_traffic(cli_t *cli, const cli_args_t *args, void *user) {
 static const cli_cmd_t led_subs[] = {
     { "on", "steady on", NULL, 0u, led_which_args, 1u, cmd_led_on },
     { "off", "steady off", NULL, 0u, led_which_args, 1u, cmd_led_off },
+    { "blink-slug", "blink at ~0.5 Hz", NULL, 0u, led_which_args, 1u, cmd_led_blink_slug },
     { "blink-slow", "blink at ~1 Hz", NULL, 0u, led_which_args, 1u, cmd_led_blink_slow },
     { "blink-fast", "blink at ~5 Hz", NULL, 0u, led_which_args, 1u, cmd_led_blink_fast },
     { "traffic", "irregular router-style activity flicker", NULL, 0u, led_which_args, 1u, cmd_led_traffic },
