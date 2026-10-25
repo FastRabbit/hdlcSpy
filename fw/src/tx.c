@@ -40,7 +40,7 @@ static tx_state_t tx_state = {
 void tx_driver_init(void) {
     gpio_init(tx_pin);
     gpio_set_dir(tx_pin, GPIO_OUT);
-    gpio_put(tx_pin, 0u);
+    gpio_put(tx_pin, 1u);
     gpio_init(rx_clock_pin);
     gpio_set_dir(rx_clock_pin, GPIO_IN);
 }
