@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.13)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(PICO_BOARD pico2)
 
@@ -19,7 +20,10 @@ add_subdirectory(external/clipilot)
 add_executable(hdlcspy_fw
     src/main.c
     src/led.c
+    src/spy.c
+    src/sys.c
     src/tx_clock.c
+    src/tx.c
 )
 
 pico_enable_stdio_usb(hdlcspy_fw 1)

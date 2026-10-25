@@ -11,6 +11,7 @@
 typedef enum {
     LED_MODE_OFF = 0,     /**< steady off */
     LED_MODE_ON,           /**< steady on */
+    LED_MODE_BLINK_SLUG,  /**< ~0.5 Hz square wave */
     LED_MODE_BLINK_SLOW,   /**< ~1 Hz square wave */
     LED_MODE_BLINK_FAST,   /**< ~5 Hz square wave */
     LED_MODE_TRAFFIC,      /**< irregular router-style activity flicker */
